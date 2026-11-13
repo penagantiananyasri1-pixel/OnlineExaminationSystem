@@ -37,6 +37,12 @@ pipeline {
                 bat '"C:/Users/PENAGANTI ANANYA SRI/Downloads/apache-maven-3.9.16/apache-maven-3.9.16/bin/mvn.cmd" package -DskipTests'
             }
         }
+stage('Check Docker') {
+    steps {
+        bat 'docker --version'
+        bat 'docker ps'
+    }
+}
 
         stage('Docker Build') {
             steps {
