@@ -1,50 +1,53 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = 'online-exam:1.0'
-    }
-
     stages {
 
         stage('Checkout') {
             steps {
-                echo 'Downloading source code from GitHub'
+                echo 'Downloading code from GitHub'
                 checkout scm
+            }
+        }
+
+        stage('Check Tools') {
+            steps {
+                bat 'java -version'
+                bat '"C:/Users/PENAGANTI ANANYA SRI/Downloads/apache-maven-3.9.16/apache-maven-3.9.16/bin/mvn.cmd" -version'
             }
         }
 
         stage('Build') {
             steps {
                 echo 'Building Online Examination System'
-                bat 'mvn clean compile'
+                bat '"C:/Users/PENAGANTI ANANYA SRI/Downloads/apache-maven-3.9.16/apache-maven-3.9.16/bin/mvn.cmd" clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Testing Online Examination System'
-                bat 'mvn test'
+                echo 'Testing Application'
+                bat '"C:/Users/PENAGANTI ANANYA SRI/Downloads/apache-maven-3.9.16/apache-maven-3.9.16/bin/mvn.cmd" test'
             }
         }
 
         stage('Package') {
             steps {
-                echo 'Packaging application into JAR'
-                bat 'mvn package -DskipTests'
+                echo 'Generating JAR file'
+                bat '"C:/Users/PENAGANTI ANANYA SRI/Downloads/apache-maven-3.9.16/apache-maven-3.9.16/bin/mvn.cmd" package -DskipTests'
             }
         }
 
         stage('Docker Build') {
             steps {
-                echo 'Building Docker Image'
-                bat 'docker build -t %DOCKER_IMAGE% .'
+                echo 'Creating Docker Image'
+                bat 'docker build -t online-exam:1.0 .'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application using Kubernetes'
+                echo 'Deploying using Kubernetes'
                 bat 'kubectl apply -f deployment.yaml'
                 bat 'kubectl apply -f service.yaml'
             }
@@ -53,7 +56,7 @@ pipeline {
 
     post {
         success {
-            echo 'Online Examination System deployed successfully!'
+            echo 'Pipeline executed successfully!'
         }
 
         failure {
@@ -61,8 +64,7 @@ pipeline {
         }
 
         always {
-            echo 'CI/CD Pipeline execution completed.'
+            echo 'CI/CD execution completed!'
         }
     }
 }
-
