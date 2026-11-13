@@ -51,13 +51,21 @@ stage('Check Docker') {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                echo 'Deploying using Kubernetes'
-                bat 'kubectl apply -f deployment.yaml'
-                bat 'kubectl apply -f service.yaml'
-            }
-        }
+     stage('Deploy') {
+    steps {
+        echo 'Deploying Online Examination System to Kubernetes'
+
+        bat '''
+        set "KUBECONFIG=C:\\Users\\PENAGANTI ANANYA SRI\\.kube\\config"
+        kubectl config use-context minikube
+        kubectl cluster-info
+        minikube image load online-exam:1.0
+        kubectl apply --validate=false -f deployment.yaml
+        kubectl apply --validate=false -f service.yaml
+        kubectl rollout status deployment/online-exam --timeout=120s
+        '''
+    }
+}
     }
 
     post {
