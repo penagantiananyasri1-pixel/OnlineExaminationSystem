@@ -57,17 +57,24 @@ stage('Check Docker') {
 
         bat '''
         set "KUBECONFIG=C:\\Users\\PENAGANTI ANANYA SRI\\.kube\\config"
+        set "MINIKUBE_HOME=C:\\Users\\PENAGANTI ANANYA SRI\\.minikube"
+
         kubectl config use-context minikube
         kubectl cluster-info
+
         minikube image load online-exam:1.0
+
         kubectl apply --validate=false -f deployment.yaml
         kubectl apply --validate=false -f service.yaml
-        kubectl rollout status deployment/online-exam --timeout=120s
+
+        kubectl rollout status deployment/online-exam-deployment --timeout=120s
+
+        kubectl get pods
+        kubectl get services
         '''
     }
 }
-    }
-
+}
     post {
         success {
             echo 'Pipeline executed successfully!'
