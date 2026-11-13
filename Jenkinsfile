@@ -1,7 +1,9 @@
-
 pipeline {
-
     agent any
+
+    environment {
+        DOCKER_IMAGE = 'online-exam:1.0'
+    }
 
     stages {
 
@@ -21,40 +23,35 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running application tests'
+                echo 'Testing Online Examination System'
                 bat 'mvn test'
             }
         }
 
         stage('Package') {
             steps {
-                echo 'Creating executable JAR file'
-                bat 'mvn package'
+                echo 'Packaging application into JAR'
+                bat 'mvn package -DskipTests'
             }
         }
 
         stage('Docker Build') {
             steps {
-                echo 'Creating Docker image'
-                bat 'docker build -t online-exam:1.0 .'
+                echo 'Building Docker Image'
+                bat 'docker build -t %DOCKER_IMAGE% .'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Loading image into Minikube'
-                bat 'minikube image load online-exam:1.0'
-
-                echo 'Deploying application'
+                echo 'Deploying application using Kubernetes'
                 bat 'kubectl apply -f deployment.yaml'
-
                 bat 'kubectl apply -f service.yaml'
             }
         }
     }
 
     post {
-
         success {
             echo 'Online Examination System deployed successfully!'
         }
@@ -68,3 +65,4 @@ pipeline {
         }
     }
 }
+
